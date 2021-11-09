@@ -95,7 +95,7 @@ if __name__ == "__main__":
             if not path.isfile(npz):
                 pool_args.append(v_path)
         
-        if args.p == -1:
+        if args.n_proc == -1:
             proc = multiprocessing.cpu_count()
         else:
             proc = args.p
