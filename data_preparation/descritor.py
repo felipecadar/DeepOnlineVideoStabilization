@@ -9,7 +9,7 @@ import multiprocessing
 import argparse
 INPUT_FOLDER = path.abspath("../DeepStab")
 
-def CalcOF(v_path):
+def ExtractSURF(v_path):
     try:
         # In case you're using Pool
         pos = multiprocessing.current_process()._identity[0]
@@ -17,7 +17,7 @@ def CalcOF(v_path):
         pos = 0
     
     use_memmap = False
-    optical_flow = cv2.optflow.DualTVL1OpticalFlow_create()
+    surf = cv2.SURF_create()
     cap = cv2.VideoCapture(v_path)
     if not cap.isOpened():
         print(f"Fail to open {v_path}")
@@ -55,8 +55,9 @@ def CalcOF(v_path):
             of_x.flush()
             of_y.flush()
 
-        prvs = next
         i+=1
+        prvs = next
+
         pbar.update()
 
     np.savez_compressed(v_path.split(".")[0] + "_OF", of_x = of_x, of_y=of_y)
@@ -83,15 +84,15 @@ if __name__ == "__main__":
     if not args.pool:
         for v_path in all_videos:
             v_name =  v_path.split("/")[-1]
-            npz = v_path.split(".")[0] + "_OF.npz"
+            npz = v_path.split(".")[0] + ".surf"
             if not path.isfile(npz):
                 tqdm.tqdm.write(f"Extracting video {v_name}")
-                CalcOF(v_path)
+                ExtractSURF(v_path)
     else:
         pool_args = []
         for v_path in all_videos:
             v_name =  v_path.split("/")[-1]
-            npz = v_path.split(".")[0] + "_OF.npz"
+            npz = v_path.split(".")[0] + ".surf"
             if not path.isfile(npz):
                 pool_args.append(v_path)
         
@@ -101,7 +102,7 @@ if __name__ == "__main__":
             proc = args.n_proc
 
         with Pool(proc) as p:
-            res = p.map(CalcOF, pool_args)
+            res = p.map(ExtractSURF, pool_args)
 
         for x in res:
             assert(x)
