@@ -98,7 +98,7 @@ if __name__ == "__main__":
         if args.n_proc == -1:
             proc = multiprocessing.cpu_count()
         else:
-            proc = args.p
+            proc = args.n_proc
 
         with Pool(proc) as p:
             res = p.map(CalcOF, pool_args)
