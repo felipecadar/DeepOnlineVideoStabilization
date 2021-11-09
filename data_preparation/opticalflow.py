@@ -10,8 +10,12 @@ import argparse
 INPUT_FOLDER = path.abspath("../DeepStab")
 
 def CalcOF(v_path):
-    # pos = multiprocessing.current_process()._identity[0]
-    pos = 0
+    try:
+        # In case you're using Pool
+        pos = multiprocessing.current_process()._identity[0]
+    except:
+        pos = 0
+    
     use_memmap = False
     optical_flow = cv2.optflow.DualTVL1OpticalFlow_create()
     cap = cv2.VideoCapture(v_path)
