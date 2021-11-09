@@ -80,7 +80,7 @@ if __name__ == "__main__":
     all_videos = glob(path.join(args.input, "**/*.avi"), recursive=True)
     print(f"Found {len(all_videos)} videos")
 
-    if args.pool:
+    if not args.pool:
         for v_path in all_videos:
             v_name =  v_path.split("/")[-1]
             npz = v_path.split(".")[0] + "_OF.npz"
