@@ -101,7 +101,7 @@ if __name__ == "__main__":
             proc = args.p
 
         with Pool(proc) as p:
-            res = p.map(CalcOF, args)
+            res = p.map(CalcOF, pool_args)
 
         for x in res:
             assert(x)
