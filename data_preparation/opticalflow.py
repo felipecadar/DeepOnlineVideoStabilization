@@ -70,7 +70,7 @@ def parse():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input",  "-i", default=INPUT_FOLDER, required=False)
     parser.add_argument("--pool",  "-p", default=False, action="store_true", required=False)
-    parser.add_argument("--n-proc", "-p", type=int, default=-1, required=False)
+    parser.add_argument("--n-proc", type=int, default=-1, required=False)
     return parser.parse_args()
 
 if __name__ == "__main__":
