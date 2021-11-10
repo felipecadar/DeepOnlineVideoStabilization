@@ -11,7 +11,7 @@ import h5py
 
 INPUT_FOLDER = path.abspath("../DeepStab")
 
-def CalcOF(v_path):
+def CalcOF(v_path, out_path):
     try:
         # In case you're using Pool
         pos = multiprocessing.current_process()._identity[0]
@@ -32,7 +32,6 @@ def CalcOF(v_path):
     frame = cv2.resize(frame, (w, h))
     prvs = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    out_path = v_path.split(".")[0] + "_OF.h5"
     dataset = h5py.File(out_path, "w")
     dataset.create_group('flow')
 
