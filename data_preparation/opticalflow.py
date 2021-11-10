@@ -7,8 +7,7 @@ import numpy as np
 from multiprocessing import Pool
 import multiprocessing
 import argparse
-import tables
-
+import h5py
 
 INPUT_FOLDER = path.abspath("../DeepStab")
 
@@ -19,9 +18,8 @@ def CalcOF(v_path):
     except:
         pos = 0
     
-    use_memmap = False
-    optical_flow = cv2.optflow.DualTVL1OpticalFlow_create()
     cap = cv2.VideoCapture(v_path)
+
     if not cap.isOpened():
         print(f"Fail to open {v_path}")
         return False
@@ -34,9 +32,12 @@ def CalcOF(v_path):
     frame = cv2.resize(frame, (w, h))
     prvs = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    of_x = np.zeros((h, w, frame_count), dtype=np.float32)
-    of_y = np.zeros((h, w, frame_count), dtype=np.float32)
+    out_path = v_path.split(".")[0] + "_OF"
+    dataset = h5py.File(out_path, "w")
+    dataset.create_group('imgs')
 
+    optical_flow = cv2.optflow.DualTVL1OpticalFlow_create()
+    
     i = 0
     while ret:
         ret, frame = cap.read()
@@ -47,18 +48,12 @@ def CalcOF(v_path):
         next = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         flow = optical_flow.calc(prvs, next, None)
-        of_x[:,:,i] = flow[:,:,0]
-        of_y[:,:,i] = flow[:,:,1]
-        
-        if use_memmap:
-            of_x.flush()
-            of_y.flush()
+        dataset['imgs'].create_dataset(str(i), data = flow, compression="gzip", compression_opts=9, dtype=np.float32)
+
 
         prvs = next
         i+=1
         pbar.update()
-
-    np.savez_compressed(v_path.split(".")[0] + "_OF", of_x = of_x, of_y=of_y)
     
     cap.release()
     pbar.close()
