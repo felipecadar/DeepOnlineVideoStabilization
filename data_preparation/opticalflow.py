@@ -87,9 +87,12 @@ if __name__ == "__main__":
             if not path.isfile(npz):
                 tqdm.tqdm.write(f"Extracting video {v_name}")
                 CalcOF(v_path)
+            else:
+                print(f"Found {npz}")
     else:
         pool_args = []
         for v_path in all_videos:
+            v_path = path.abspath(v_path)
             v_name =  v_path.split("/")[-1]
             npz = v_path.split(".")[0] + "_OF.npz"
             if not path.isfile(npz):
