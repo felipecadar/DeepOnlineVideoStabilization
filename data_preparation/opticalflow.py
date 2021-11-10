@@ -70,6 +70,10 @@ def parse():
 if __name__ == "__main__":
 
     args = parse()
+    input_folder = path.abspath(args.input)
+    if not path.isdir(input_folder):
+        print("Fail to find input folder", input_folder)
+        exit()
 
     all_videos = glob(path.join(args.input, "**/*.avi"), recursive=True)
     print(f"Found {len(all_videos)} videos")
@@ -86,7 +90,6 @@ if __name__ == "__main__":
     else:
         pool_args = []
         for v_path in all_videos:
-            v_path = path.abspath(v_path)
             v_name =  v_path.split("/")[-1]
             npz = v_path.split(".")[0] + "_OF.npz"
             if not path.isfile(npz):
