@@ -76,15 +76,14 @@ if __name__ == "__main__":
     all_videos = glob(path.join(args.input, "**/*.avi"), recursive=True)
     print(f"Found {len(all_videos)} videos")
 
-    if not args.pool:
-        for v_path in all_videos:
-            v_name =  path.basename(v_path)
-            out_path = v_path.replace('.avi', "_OF.h5")
-            if not path.isfile(out_path):
-                tqdm.tqdm.write(f"Extracting video {v_name}")
-                CalcOF(v_path, out_path)
-            else:
-                print(f"Found {out_path}")
+    for v_path in all_videos:
+        v_name =  path.basename(v_path)
+        out_path = v_path.replace('.avi', "_OF.h5")
+        if not path.isfile(out_path):
+            tqdm.tqdm.write(f"Extracting video {v_name}")
+            CalcOF(v_path, out_path)
+        else:
+            print(f"Found {out_path}")
 
 
             
