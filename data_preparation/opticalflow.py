@@ -32,7 +32,7 @@ def CalcOF(v_path):
     frame = cv2.resize(frame, (w, h))
     prvs = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    out_path = v_path.split(".")[0] + "_OF"
+    out_path = v_path.split(".")[0] + "_OF.h5"
     dataset = h5py.File(out_path, "w")
     dataset.create_group('imgs')
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     if not args.pool:
         for v_path in all_videos:
             v_name =  v_path.split("/")[-1]
-            npz = v_path.split(".")[0] + "_OF.npz"
+            npz = v_path.split(".")[0] + "_OF.h5"
             if not path.isfile(npz):
                 tqdm.tqdm.write(f"Extracting video {v_name}")
                 CalcOF(v_path)
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         pool_args = []
         for v_path in all_videos:
             v_name =  v_path.split("/")[-1]
-            npz = v_path.split(".")[0] + "_OF.npz"
+            npz = v_path.split(".")[0] + "_OF.h5"
             if not path.isfile(npz):
                 pool_args.append(v_path)
         
