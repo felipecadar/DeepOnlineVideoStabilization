@@ -17,7 +17,8 @@ def ExtractSURF(v_path):
         pos = 0
     
     use_memmap = False
-    surf = cv2.SURF_create()
+    surf = cv2.xfeatures2d.SURF_create()
+    
     cap = cv2.VideoCapture(v_path)
     if not cap.isOpened():
         print(f"Fail to open {v_path}")
@@ -27,40 +28,25 @@ def ExtractSURF(v_path):
 
     pbar = tqdm.tqdm(total=frame_count, leave=False, position=pos)
     w, h = 512, 288
-    ret, frame = cap.read()
-    frame = cv2.resize(frame, (w, h))
-    prvs = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    if use_memmap:
-        of_x = np.memmap("of_x.dat", dtype='float32', mode='w+', shape=(h, w, frame_count))
-        of_y = np.memmap("of_y.dat", dtype='float32', mode='w+', shape=(h, w, frame_count))
-    else:
-        of_x = np.zeros((h, w, frame_count), dtype=np.float32)
-        of_y = np.zeros((h, w, frame_count), dtype=np.float32)
-
     i = 0
+
+    kps = []
+    descs = []
     while ret:
         ret, frame = cap.read()
         if not ret:
             break
 
         frame = cv2.resize(frame, (w, h))
-        next = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        flow = optical_flow.calc(prvs, next, None)
-        of_x[:,:,i] = flow[:,:,0]
-        of_y[:,:,i] = flow[:,:,1]
-        
-        if use_memmap:
-            of_x.flush()
-            of_y.flush()
+        keypoints_surf, descriptors = surf.detectAndCompute(frame, None)
+        kps.append(keypoints_surf)
+        descs.append(descriptors)
 
         i+=1
-        prvs = next
 
         pbar.update()
-
-    np.savez_compressed(v_path.split(".")[0] + "_OF", of_x = of_x, of_y=of_y)
     
     cap.release()
     pbar.close()

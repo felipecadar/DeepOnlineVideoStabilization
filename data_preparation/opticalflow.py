@@ -7,6 +7,9 @@ import numpy as np
 from multiprocessing import Pool
 import multiprocessing
 import argparse
+import tables
+
+
 INPUT_FOLDER = path.abspath("../DeepStab")
 
 def CalcOF(v_path):
@@ -31,12 +34,8 @@ def CalcOF(v_path):
     frame = cv2.resize(frame, (w, h))
     prvs = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    if use_memmap:
-        of_x = np.memmap("of_x.dat", dtype='float32', mode='w+', shape=(h, w, frame_count))
-        of_y = np.memmap("of_y.dat", dtype='float32', mode='w+', shape=(h, w, frame_count))
-    else:
-        of_x = np.zeros((h, w, frame_count), dtype=np.float32)
-        of_y = np.zeros((h, w, frame_count), dtype=np.float32)
+    of_x = np.zeros((h, w, frame_count), dtype=np.float32)
+    of_y = np.zeros((h, w, frame_count), dtype=np.float32)
 
     i = 0
     while ret:
