@@ -34,7 +34,7 @@ def CalcOF(v_path):
 
     out_path = v_path.split(".")[0] + "_OF.h5"
     dataset = h5py.File(out_path, "w")
-    dataset.create_group('imgs')
+    dataset.create_group('flow')
 
     optical_flow = cv2.optflow.DualTVL1OpticalFlow_create()
     
@@ -48,7 +48,7 @@ def CalcOF(v_path):
         next = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         flow = optical_flow.calc(prvs, next, None)
-        dataset['imgs'].create_dataset(str(i), data = flow, compression="gzip", compression_opts=9, dtype=np.float32)
+        dataset['flow'].create_dataset(str(i), data = flow, compression="gzip", compression_opts=9, dtype=np.float32)
 
 
         prvs = next
@@ -63,8 +63,6 @@ def CalcOF(v_path):
 def parse():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input",  "-i", default=INPUT_FOLDER, required=False)
-    parser.add_argument("--pool",  "-p", default=False, action="store_true", required=False)
-    parser.add_argument("--n-proc", type=int, default=-1, required=False)
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -80,30 +78,13 @@ if __name__ == "__main__":
 
     if not args.pool:
         for v_path in all_videos:
-            v_name =  v_path.split("/")[-1]
-            npz = v_path.split(".")[0] + "_OF.h5"
-            if not path.isfile(npz):
+            v_name =  path.basename(v_path)
+            out_path = v_path.replace('.avi', "_OF.h5")
+            if not path.isfile(out_path):
                 tqdm.tqdm.write(f"Extracting video {v_name}")
-                CalcOF(v_path)
+                CalcOF(v_path, out_path)
             else:
-                print(f"Found {npz}")
-    else:
-        pool_args = []
-        for v_path in all_videos:
-            v_name =  v_path.split("/")[-1]
-            npz = v_path.split(".")[0] + "_OF.h5"
-            if not path.isfile(npz):
-                pool_args.append(v_path)
-        
-        if args.n_proc == -1:
-            proc = multiprocessing.cpu_count()
-        else:
-            proc = args.n_proc
+                print(f"Found {out_path}")
 
-        with Pool(proc) as p:
-            res = p.map(CalcOF, pool_args)
-
-        for x in res:
-            assert(x)
 
             
