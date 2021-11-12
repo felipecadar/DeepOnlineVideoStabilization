@@ -12,12 +12,7 @@ import h5py
 INPUT_FOLDER = path.abspath("../DeepStab")
 
 def ExtractSURF(v_path, out_path):
-    try:
-        # In case you're using Pool
-        pos = multiprocessing.current_process()._identity[0]
-    except:
-        pos = 0
-    
+
     surf = cv2.xfeatures2d.SURF_create()
     
     cap = cv2.VideoCapture(v_path)
@@ -31,7 +26,7 @@ def ExtractSURF(v_path, out_path):
 
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    pbar = tqdm.tqdm(total=frame_count, leave=False, position=pos)
+    pbar = tqdm.tqdm(total=frame_count, leave=False)
     w, h = 512, 288
     i = 0
 
